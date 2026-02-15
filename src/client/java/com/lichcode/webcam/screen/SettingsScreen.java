@@ -12,8 +12,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -100,13 +100,11 @@ public class SettingsScreen extends Screen {
         float k = entity.bodyYaw;
         float l = entity.getYaw();
         float m = entity.getPitch();
-        float n = entity.prevHeadYaw;
-        float o = entity.headYaw;
+        float n = entity.headYaw;
         entity.bodyYaw = 180.0F + i * 20.0F;
         entity.setYaw(180.0F + i * 40.0F);
         entity.setPitch(-j * 20.0F);
         entity.headYaw = entity.getYaw();
-        entity.prevHeadYaw = entity.getYaw();
         float p = entity.getScale();
         Vector3f vector3f = new Vector3f(0.0F, entity.getHeight() - 0.6f + f * p, 0.0F);
         float q = (float)size / p;
@@ -114,30 +112,13 @@ public class SettingsScreen extends Screen {
         entity.bodyYaw = k;
         entity.setYaw(l);
         entity.setPitch(m);
-        entity.prevHeadYaw = n;
-        entity.headYaw = o;
+        entity.headYaw = n;
         context.disableScissor();
     }
 
     public static void drawEntity(DrawContext context, float x, float y, float size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
-        context.getMatrices().push();
-        context.getMatrices().translate((double)x, (double)y, (double)50.0F);
-        context.getMatrices().scale(size, size, -size);
-        context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z - 5);
-        context.getMatrices().multiply(quaternionf);
-        context.draw();
-        DiffuseLighting.method_34742();
-        EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        if (quaternionf2 != null) {
-            entityRenderDispatcher.setRotation(quaternionf2.conjugate(new Quaternionf()).rotateY((float)Math.PI));
-        }
-
-        entityRenderDispatcher.setRenderShadows(false);
-        context.draw((vertexConsumers) -> entityRenderDispatcher.render(entity, (double)0.0F, (double)0.0F, (double)0.0F, 1.0F, context.getMatrices(), vertexConsumers, 15728880));
-        context.draw();
-        entityRenderDispatcher.setRenderShadows(true);
-        context.getMatrices().pop();
-        DiffuseLighting.enableGuiDepthLighting();
+        // Use InventoryScreen.drawEntity style for 1.21.8
+        net.minecraft.client.gui.screen.ingame.InventoryScreen.drawEntity(context, (int)(x - size/2), (int)(y - size), (int)(x + size/2), (int)(y + size), (int)size, vector3f, quaternionf, quaternionf2, entity);
     }
 
     @Override
@@ -169,7 +150,6 @@ public class SettingsScreen extends Screen {
         @Override
         protected void renderHeader(DrawContext context, int x, int y) {
             context.drawCenteredTextWithShadow(SettingsScreen.this.textRenderer, Text.of("Select Webcam"), this.width/2, y, 0xFFFF00);
-            context.draw();
         }
 
         @Override

@@ -31,8 +31,9 @@ public class PlayerVideo {
             throw new RuntimeException(e);
         }
 
-        int width = image.getWidth();
-        int height = image.getHeight();
+        // Update width and height from actual decoded image
+        this.width = image.getWidth();
+        this.height = image.getHeight();
 
         // Create a ByteBuffer large enough for RGB
         ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 3);

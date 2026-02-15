@@ -31,7 +31,7 @@ public class WebcamMod implements ModInitializer {
 			ServerPlayerEntity sender = context.player();
 
 			// Only send the video to players within 100 blocks
-			for (ServerPlayerEntity player : PlayerLookup.around(sender.getServerWorld(), sender.getPos(), 100)) {
+			for (ServerPlayerEntity player : PlayerLookup.around(sender.getWorld(), sender.getPos(), 100)) {
 				// Do not send the video to the sender, they just sent it to the server duh.
 				if (player.getUuid() == sender.getUuid()) {
 					continue;

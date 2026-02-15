@@ -31,9 +31,11 @@ public class RenderableImage {
     }
 
     public void fill(PlayerVideo video) {
+        // Get the byte buffer first (this updates video.width and video.height from actual image)
+        this.data = video.asByteBuffer();
+        // Now get the correct dimensions
         this.width = video.width;
         this.height = video.height;
-        this.data = video.asByteBuffer();
     }
 
     public ByteBuffer data() {
