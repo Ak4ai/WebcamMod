@@ -16,6 +16,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
+import com.lichcode.webcam.WebcamSettings;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -132,12 +133,12 @@ public class PlayerFaceRenderer extends FeatureRenderer<PlayerEntityRenderState,
         
         data.rewind();
         
-        // Copy RGB data to RGBA NativeImage
+        // Copy RGB data to RGBA NativeImage with gamma correction
         for (int y = 0; y < Math.min(image.height, nativeImage.getHeight()); y++) {
             for (int x = 0; x < Math.min(image.width, nativeImage.getWidth()); x++) {
-                int r = data.get() & 0xFF;
-                int g = data.get() & 0xFF;
-                int b = data.get() & 0xFF;
+                int r = WebcamSettings.applyGamma(data.get() & 0xFF);
+                int g = WebcamSettings.applyGamma(data.get() & 0xFF);
+                int b = WebcamSettings.applyGamma(data.get() & 0xFF);
                 // NativeImage uses ABGR format
                 int color = (255 << 24) | (b << 16) | (g << 8) | r;
                 nativeImage.setColorArgb(x, y, color);

@@ -1,5 +1,6 @@
 package com.lichcode.webcam;
 
+import com.lichcode.webcam.render.FloatingWebcamHud;
 import com.lichcode.webcam.render.PlayerFaceRenderer;
 
 import com.lichcode.webcam.screen.SettingsScreen;
@@ -26,12 +27,16 @@ public class WebcamModClient implements ClientModInitializer {
 			}
 		});
 
+		// Register floating webcam HUD renderer
+		HudRenderCallback.EVENT.register(new FloatingWebcamHud());
+
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			VideoManager.startCameraLoop();
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
 			VideoManager.stopThread();
+			FloatingWebcamHud.cleanup();
 		}));
 
 		ClientPlayNetworking.registerGlobalReceiver(VideoFramePayload.ID, ((payload, context) -> {

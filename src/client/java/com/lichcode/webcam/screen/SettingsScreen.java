@@ -11,8 +11,11 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import com.lichcode.webcam.WebcamSettings;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Text;
@@ -46,6 +49,9 @@ public class SettingsScreen extends Screen {
     public void init() {
         initCloseButton();
         initWebcamList();
+        initGammaSlider();
+        initFloatingWebcamToggle();
+        initFloatingSizeSlider();
     }
 
     private void initCloseButton() {
@@ -65,8 +71,9 @@ public class SettingsScreen extends Screen {
         List<String> webcams = VideoCamara.getWebcamList();
 
         int listWidth = this.width/4;
-        int closeButtonY = this.height - ELEMENT_SPACING;
-        WebcamEntryList listWidget = new WebcamEntryList(this.client, listWidth, closeButtonY, ELEMENT_SPACING, 18, 18);
+        // Leave space at the bottom for the gamma slider
+        int listBottom = this.height - ELEMENT_HEIGHT * 2 - ELEMENT_SPACING * 3;
+        WebcamEntryList listWidget = new WebcamEntryList(this.client, listWidth, listBottom, ELEMENT_SPACING, 18, 18);
         String currentWebcam = VideoCamara.getCurrentWebcam();
         for (String webcamName : webcams) {
             int index = listWidget.addEntry(webcamName);
@@ -86,6 +93,42 @@ public class SettingsScreen extends Screen {
 
         this.webcamEntryList = listWidget;
         addDrawableChild(listWidget);
+    }
+
+    private void initGammaSlider() {
+        int sliderWidth = this.width/4 - ELEMENT_SPACING * 2;
+        int sliderX = ELEMENT_SPACING;
+        int sliderY = this.height - ELEMENT_HEIGHT - ELEMENT_SPACING * 2;
+        
+        GammaSliderWidget gammaSlider = new GammaSliderWidget(sliderX, sliderY, sliderWidth, ELEMENT_HEIGHT);
+        addDrawableChild(gammaSlider);
+    }
+
+    private void initFloatingWebcamToggle() {
+        int buttonWidth = 150;
+        int buttonX = this.width - buttonWidth - ELEMENT_SPACING;
+        int buttonY = ELEMENT_SPACING;
+        
+        String status = WebcamSettings.isFloatingWebcamsEnabled() ? "ON" : "OFF";
+        ButtonWidget toggleButton = ButtonWidget.builder(
+                Text.of("Floating Webcams: " + status),
+                button -> {
+                    WebcamSettings.toggleFloatingWebcams();
+                    String newStatus = WebcamSettings.isFloatingWebcamsEnabled() ? "ON" : "OFF";
+                    button.setMessage(Text.of("Floating Webcams: " + newStatus));
+                }
+        ).dimensions(buttonX, buttonY, buttonWidth, ELEMENT_HEIGHT).build();
+        
+        addDrawableChild(toggleButton);
+    }
+
+    private void initFloatingSizeSlider() {
+        int sliderWidth = 150;
+        int sliderX = this.width - sliderWidth - ELEMENT_SPACING;
+        int sliderY = ELEMENT_SPACING + ELEMENT_HEIGHT + ELEMENT_SPACING;
+        
+        FloatingSizeSliderWidget sizeSlider = new FloatingSizeSliderWidget(sliderX, sliderY, sliderWidth, ELEMENT_HEIGHT);
+        addDrawableChild(sizeSlider);
     }
 
     public static void drawEntity(DrawContext context, int x1, int y1, int x2, int y2, float size, float f, float mouseX, float mouseY, LivingEntity entity) {
@@ -207,5 +250,46 @@ public class SettingsScreen extends Screen {
             }
         }
 
+    }
+
+    @Environment(EnvType.CLIENT)
+    public class GammaSliderWidget extends SliderWidget {
+        public GammaSliderWidget(int x, int y, int width, int height) {
+            super(x, y, width, height, Text.of("Brightness: " + String.format("%.1f", WebcamSettings.getGamma())), 
+                  (WebcamSettings.getGamma() - WebcamSettings.MIN_GAMMA) / (WebcamSettings.MAX_GAMMA - WebcamSettings.MIN_GAMMA));
+        }
+
+        @Override
+        protected void updateMessage() {
+            float gamma = WebcamSettings.MIN_GAMMA + (float)this.value * (WebcamSettings.MAX_GAMMA - WebcamSettings.MIN_GAMMA);
+            this.setMessage(Text.of("Brightness: " + String.format("%.1f", gamma)));
+        }
+
+        @Override
+        protected void applyValue() {
+            float gamma = WebcamSettings.MIN_GAMMA + (float)this.value * (WebcamSettings.MAX_GAMMA - WebcamSettings.MIN_GAMMA);
+            WebcamSettings.setGamma(gamma);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public class FloatingSizeSliderWidget extends SliderWidget {
+        public FloatingSizeSliderWidget(int x, int y, int width, int height) {
+            super(x, y, width, height, Text.of("Size: " + WebcamSettings.getFloatingWebcamSize() + "px"), 
+                  (float)(WebcamSettings.getFloatingWebcamSize() - WebcamSettings.MIN_FLOATING_SIZE) / 
+                  (WebcamSettings.MAX_FLOATING_SIZE - WebcamSettings.MIN_FLOATING_SIZE));
+        }
+
+        @Override
+        protected void updateMessage() {
+            int size = WebcamSettings.MIN_FLOATING_SIZE + (int)(this.value * (WebcamSettings.MAX_FLOATING_SIZE - WebcamSettings.MIN_FLOATING_SIZE));
+            this.setMessage(Text.of("Size: " + size + "px"));
+        }
+
+        @Override
+        protected void applyValue() {
+            int size = WebcamSettings.MIN_FLOATING_SIZE + (int)(this.value * (WebcamSettings.MAX_FLOATING_SIZE - WebcamSettings.MIN_FLOATING_SIZE));
+            WebcamSettings.setFloatingWebcamSize(size);
+        }
     }
 }
