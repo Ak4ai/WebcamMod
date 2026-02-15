@@ -50,6 +50,7 @@ public class SettingsScreen extends Screen {
         initCloseButton();
         initWebcamList();
         initGammaSlider();
+        initFaceWebcamToggle();
         initFloatingWebcamToggle();
         initFloatingSizeSlider();
     }
@@ -107,7 +108,7 @@ public class SettingsScreen extends Screen {
     private void initFloatingWebcamToggle() {
         int buttonWidth = 150;
         int buttonX = this.width - buttonWidth - ELEMENT_SPACING;
-        int buttonY = ELEMENT_SPACING;
+        int buttonY = ELEMENT_SPACING + ELEMENT_HEIGHT + ELEMENT_SPACING;
         
         String status = WebcamSettings.isFloatingWebcamsEnabled() ? "ON" : "OFF";
         ButtonWidget toggleButton = ButtonWidget.builder(
@@ -125,10 +126,28 @@ public class SettingsScreen extends Screen {
     private void initFloatingSizeSlider() {
         int sliderWidth = 150;
         int sliderX = this.width - sliderWidth - ELEMENT_SPACING;
-        int sliderY = ELEMENT_SPACING + ELEMENT_HEIGHT + ELEMENT_SPACING;
+        int sliderY = ELEMENT_SPACING + (ELEMENT_HEIGHT + ELEMENT_SPACING) * 2;
         
         FloatingSizeSliderWidget sizeSlider = new FloatingSizeSliderWidget(sliderX, sliderY, sliderWidth, ELEMENT_HEIGHT);
         addDrawableChild(sizeSlider);
+    }
+
+    private void initFaceWebcamToggle() {
+        int buttonWidth = 150;
+        int buttonX = this.width - buttonWidth - ELEMENT_SPACING;
+        int buttonY = ELEMENT_SPACING;
+        
+        String status = WebcamSettings.isFaceWebcamEnabled() ? "ON" : "OFF";
+        ButtonWidget faceButton = ButtonWidget.builder(
+                Text.of("Face Webcam: " + status),
+                button -> {
+                    WebcamSettings.toggleFaceWebcam();
+                    String newStatus = WebcamSettings.isFaceWebcamEnabled() ? "ON" : "OFF";
+                    button.setMessage(Text.of("Face Webcam: " + newStatus));
+                }
+        ).dimensions(buttonX, buttonY, buttonWidth, ELEMENT_HEIGHT).build();
+        
+        addDrawableChild(faceButton);
     }
 
     public static void drawEntity(DrawContext context, int x1, int y1, int x2, int y2, float size, float f, float mouseX, float mouseY, LivingEntity entity) {

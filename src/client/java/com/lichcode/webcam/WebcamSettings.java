@@ -11,6 +11,9 @@ public class WebcamSettings {
     public static final float MIN_GAMMA = 0.2f;
     public static final float MAX_GAMMA = 3.0f;
     
+    // Show webcam on player face (3D model)
+    private static boolean faceWebcamEnabled = true;
+    
     // Show floating webcams in top-right corner
     private static boolean floatingWebcamsEnabled = false;
     
@@ -25,6 +28,18 @@ public class WebcamSettings {
     
     public static void setGamma(float value) {
         gamma = Math.max(MIN_GAMMA, Math.min(MAX_GAMMA, value));
+    }
+    
+    public static boolean isFaceWebcamEnabled() {
+        return faceWebcamEnabled;
+    }
+    
+    public static void setFaceWebcamEnabled(boolean enabled) {
+        faceWebcamEnabled = enabled;
+    }
+    
+    public static void toggleFaceWebcam() {
+        faceWebcamEnabled = !faceWebcamEnabled;
     }
     
     public static boolean isFloatingWebcamsEnabled() {

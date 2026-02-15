@@ -34,6 +34,10 @@ public class PlayerFaceRenderer extends FeatureRenderer<PlayerEntityRenderState,
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
+        if (!WebcamSettings.isFaceWebcamEnabled()) {
+            return;
+        }
+        
         ClientPlayNetworkHandler clientPlayNetworkHandler = MinecraftClient.getInstance().getNetworkHandler();
         if (clientPlayNetworkHandler == null) {
             return;
