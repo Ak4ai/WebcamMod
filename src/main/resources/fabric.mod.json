@@ -2,13 +2,15 @@
 	"schemaVersion": 1,
 	"id": "webcam",
 	"version": "${version}",
-	"name": "Webcam",
-	"description": "Adds webcams to minecraft",
+	"name": "Webcam Mod - Forward Port",
+	"description": "Adds webcams to minecraft. Forward port by ak4ai. Original mod by Lichcodes.",
 	"authors": [
-		"Me!"
+		"Lichcodes (Original Creator)",
+		"ak4ai (Forward Port)"
 	],
 	"contact": {
-		"homepage": "https://www.youtube.com/@lichcodes"
+		"homepage": "https://github.com/ak4ai",
+		"sources": "https://github.com/Lichcodes/WebcamMod"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/webcam/icon.png",
@@ -34,8 +36,5 @@
 		"fabric": "*",
 		"fabric-api": "*",
 		"minecraft": "~1.21.8"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }
